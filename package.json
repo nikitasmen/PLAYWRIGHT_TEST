@@ -1,0 +1,13 @@
+{
+  "name": "playwright_test",
+  "version": "1.0.0",
+  "description": "automated test for login/signup with Playwright",
+  "main": "index.js",
+  "scripts": {},
+  "author": "nikitas menounos",
+  "license": "ISC",
+  "devDependencies": {
+    "@playwright/test": "^1.42.1",
+    "@types/node": "^20.12.2"
+  }
+}
