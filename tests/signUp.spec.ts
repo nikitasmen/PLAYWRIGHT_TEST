@@ -25,7 +25,6 @@ test.describe.parallel('SignUp tests', () => {
         await page.click('#menuItem_1638551161296_4211');
         await page.fill('#username', 'nikitas');
         await page.fill('#email', 'menounosnikitas@gmail.com'); 
-        await page.fill('#signUpForm > div.form-input-group > div.-form-inputs > div.password-meter-container.password-meter-signup-container.login-form-input-wrapper.mb-15.member-input-wrapper > div > div.form-control-wrapper > input', 'fakePassword');
         
         //submit the form
         await page.click('.signup-btn');
