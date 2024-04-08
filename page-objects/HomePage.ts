@@ -12,7 +12,7 @@ export class HomePage {
     }
     
     async visit() {
-        await this.page.goto('https://nikitas.learnworlds.com/');
+        await this.page.goto('https://nikitas.learnworlds.com');
     }
 
     async clickSignUpButton() {
@@ -24,7 +24,7 @@ export class HomePage {
     }
 
     async assertHomePage() {
-        await expect(this.page).toHaveURL('https://nikitas.learnworlds.com/');
+        await expect(this.page).toHaveURL('https://nikitas.learnworlds.com');
         await expect(this.signInButton).toBeVisible();
         await expect(this.signupButton).toBeVisible();
     }

@@ -1,19 +1,16 @@
 import { test } from '@playwright/test';
-import { HomePage } from '../page-objects/HomePage';
 import { SignUpPage } from '../page-objects/SignUpPage';
 import { StartPage } from '../page-objects/StartPage';
 
 test.describe.parallel('SignUp tests', () => {
     let signUpPage: SignUpPage;    
-    let homePage: HomePage;
     let startPage: StartPage;
 
     test.beforeEach(async ({ page }) => {
-        homePage = new HomePage(page);
         signUpPage = new SignUpPage(page);
         //go to the page and access the signup form
-        await homePage.visit();
-        await homePage.clickSignUpButton();
+        await signUpPage.visit();
+        await signUpPage.clickSignUpButton();
     });
 
     test('Sign up without credentials', async ({ page }) => {    
