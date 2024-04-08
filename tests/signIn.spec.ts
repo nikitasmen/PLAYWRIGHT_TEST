@@ -1,49 +1,39 @@
-import { test, expect } from '@playwright/test';
+import { test } from '@playwright/test';
+import { HomePage } from '../page-objects/HomePage';
+import { SignInPage } from '../page-objects/SignInPage';
+import { StartPage } from '../page-objects/StartPage';
 
 test.describe.parallel('SignIn / Logout tests', () => {
+  let homePage: HomePage;
+  let signInPage: SignInPage;
+  let startPage: StartPage;
 
   test.beforeEach(async ({ page }) => {
+    homePage = new HomePage(page);
+    signInPage = new SignInPage(page);
     //go to the page
-    await page.goto('https://nikitas.learnworlds.com/');
+    await homePage.visit();
+    //click on the signup form and then on the sign in form
+    await homePage.clickSignInButton();
   }); 
 
   test('Sign in with wrong credentials', async ({ page }) => {
-    //click on the sign in form
-    await page.click('#menuItem5');
-
-    //fill the email and password fields with wrong credentials
-    await page.fill('.-email-input', 'fakeEmail');
-    await page.fill('.-pass-input', 'fakePassword');
-    //submit the login form
-    await page.click('#submitLogin');
-
-    //assert that the error message is displayed
-    const errorMes = await page.locator('.js-signin-error-msg');
-      await expect(errorMes).toContainText('Please, check your email and password.');
+    //attemp to login with wrong credentials 
+    await signInPage.login('fakemail' , 'fakepassword');
+    //assert that the login failed
+    await signInPage.assertFailedLogin(); 
   });
 
-  test('Sign in with correct credentials and Logout', async ({ page }) => {
-    //click on the signup form and then on the sign in form
-    await page.click('#menuItem5');
-    
+  test('Sign in with correct credentials and Logout', async ({ page }) => {  
+    startPage = new StartPage(page);
     //fill the email and password fields with correct credentials and submit 
-    await page.fill('.-email-input', 'menounosnikitas@gmail.com');
-    await page.fill('.-pass-input', '0raiw$AE');
-    await page.click('#submitLogin');
-
+    await signInPage.login('menounosnikitas@gmail.com', '0raiw$AE'); 
     //assert that the user is logged in and the correct page is displayed
-    await expect(page).toHaveURL('https://nikitas.learnworlds.com/start');
-    await expect(page).toHaveTitle('After Login');
-    const pageTittle = await page.locator('h1');
-      await expect(pageTittle).toBeVisible();
-      await expect(pageTittle).toHaveText('Hi, nikitas');
-
-    const signupButton = await page.locator('#menuItem_1638551161296_4211');
-      await expect(signupButton).not.toBeVisible();
-
+    await startPage.assertStartPage('nikitas');
     //logout
-    await page.goto('https://nikitas.learnworlds.com/signout');
-    await expect(page).toHaveURL('https://nikitas.learnworlds.com/');
+    await startPage.logout();
+    //assert url is correct
+    await homePage.assertHomePage();
 
   }); 
 

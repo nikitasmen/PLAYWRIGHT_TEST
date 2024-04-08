@@ -1,79 +1,53 @@
-import { test, expect } from '@playwright/test';
+import { test } from '@playwright/test';
+import { HomePage } from '../page-objects/HomePage';
+import { SignUpPage } from '../page-objects/SignUpPage';
+import { StartPage } from '../page-objects/StartPage';
 
 test.describe.parallel('SignUp tests', () => {
+    let signUpPage: SignUpPage;    
+    let homePage: HomePage;
+    let startPage: StartPage;
 
     test.beforeEach(async ({ page }) => {
-        //go to the page
-        await page.goto('https://nikitas.learnworlds.com/');
+        homePage = new HomePage(page);
+        signUpPage = new SignUpPage(page);
+        //go to the page and access the signup form
+        await homePage.visit();
+        await homePage.clickSignUpButton();
     });
 
     test('Sign up without credentials', async ({ page }) => {    
         //click on the sign up form and submit the form without credentials
-        await page.click('#menuItem_1638551161296_4211');
-        await page.click('.signup-btn');
-        
+        await signUpPage.signUp('', '', '');
         //assert that the error messages are displayed
-        const errorMes = await page.locator('.error-msg');
-            await expect(errorMes).toHaveCount(3);
-            await expect(errorMes.nth(0)).toContainText('This field should have a minimum of 4 characters.');
-            await expect(errorMes.nth(1)).toContainText('This field, is required.');
-            await expect(errorMes.nth(2)).toContainText('Password cannot be the same as email address');
+        await signUpPage.assertEmptyFormErrorMessages();
     });
 
     test('Sign up with wrong password credentials', async ({ page }) => {
         //click on the sign up form and fill the fields with wrong credentials
-        await page.click('#menuItem_1638551161296_4211');
-        await page.fill('#username', 'nikitas');
-        await page.fill('#email', 'menounosnikitas@gmail.com'); 
-        await page.getByRole('textbox', { name: 'Password' }).fill('fakepassword');        
-        //submit the form
-        //try the below for signup button 
-        await page.getByText('Sign up to nikitas! or click').click();
-        await page.click('.signup-btn');
-
+        await signUpPage.signUp('RealUser', 'email@email.com', 'fakePassword');     
         //assert that the error message is displayed
-        const errorMes = await page.locator('.error-msg');
-            await expect(errorMes).toContainText('Password does not follow the rules');
+        await signUpPage.assertPasswordError();
     }); 
 
     test('Sign up with existing email', async ({ page }) => {
         //click on the sign up form and fill the fields with wrong credentials
-        await page.click('#menuItem_1638551161296_4211');
-        await page.fill('#username', 'nikitarakos');
-        await page.fill('#email', 'menounosnikitas@gmail.com'); 
-        //check this approach for filling the password field
-        await page.getByRole('textbox', { name: 'Password' }).fill('Qwerty1E!');
-        //submit the form
-        await page.click('.signup-btn');
-
+        await signUpPage.signUp('RealUser', 'menounosnikitas@gmail.com', 'R3@lPassw0rd'); 
         //assert that the error message is displayed
-        const errorMes = await page.locator('.error-wrapper-notif').first();
-            await expect(errorMes).toHaveText('Already exists');
+        await signUpPage.assertEmailExistsErrorMessage();
     }); 
 
     //After the test the account is created and the email is already in use so the test will fail
-    test.skip('Sign up with correct credentials', async ({ page }) => {
+    test('Sign up with correct credentials', async ({ page }) => {
+        startPage = new StartPage(page);
         //create a unique fake email for the test
         const timestamp = Date.now();
         const email = `tl20412+${timestamp}@edu.hmu.gr`;
 
         //click on the sign up form and fill the fields with correct credentials
-        await page.click('#menuItem_1638551161296_4211');
-        await page.fill('#username', 'menounos');
-        await page.fill('#email', email);
-        await page.getByRole('textbox', { name: 'Password' }).fill('Qwerty1E!');
-
-        //submit the form
-        await page.click('.signup-btn');
+        await signUpPage.signUp('RealUsername', email, 'R3@lPassw0rd');
         
         //assert that the user is logged in and the correct page is displayed
-        await expect(page).toHaveURL('https://nikitas.learnworlds.com/start');
-        await expect(page).toHaveTitle('After Login');
-        const pageTittle = await page.locator('h1');
-        await expect(pageTittle).toBeVisible();
-        await expect(pageTittle).toHaveText('Hi, menounos');
-    
-        const signupButton = await page.locator('#menuItem_1638551161296_4211');
-            await expect(signupButton).not.toBeVisible();
+        await startPage.assertStartPage('RealUsername');
     }); 
 });
