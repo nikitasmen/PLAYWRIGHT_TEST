@@ -7,7 +7,7 @@
   "author": "nikitas menounos",
   "license": "ISC",
   "devDependencies": {
-    "@playwright/test": "^1.42.1",
+    "@playwright/test": "^1.45.1",
     "@types/node": "^20.12.2"
   }
 }

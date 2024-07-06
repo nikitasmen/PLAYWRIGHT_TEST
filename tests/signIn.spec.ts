@@ -31,7 +31,6 @@ test.describe.parallel('SignIn / Logout tests', () => {
     await startPage.logout();
     //assert url is correct
     await signInPage.assertHomePage();
-
   }); 
-
-});
+  	
+}); 
